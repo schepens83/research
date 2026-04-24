@@ -424,6 +424,21 @@
 
         for (const field of allFields) {
           const bv = b?.[field], ov = o?.[field], tv = t?.[field];
+
+          // Auto-resolve metadata fields — never surface to user as conflicts
+          if (field === '_updated_at') {
+            mergedRec[field] = (ov ?? '') > (tv ?? '') ? ov : tv;
+            continue;
+          }
+          if (field === '_updated_by') {
+            mergedRec[field] = (o?._updated_at ?? '') > (t?._updated_at ?? '') ? ov : tv;
+            continue;
+          }
+          if (field.startsWith('_')) {
+            mergedRec[field] = ov ?? tv;
+            continue;
+          }
+
           const ourChanged = !eq(ov, bv);
           const theirChanged = !eq(tv, bv);
           if (!ourChanged && !theirChanged) { mergedRec[field] = bv; }
