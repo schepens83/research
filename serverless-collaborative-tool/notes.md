@@ -92,6 +92,65 @@ Generic key-value records. Each record:
 Internal/metadata keys prefixed with `_`. User-defined fields are anything else.
 The edit form lets users add/remove arbitrary key-value pairs dynamically.
 
+## Phase 2 implementation notes
+
+Wired isomorphic-git into the Phase 1 tool.
+
+### FSA adapter (inlined)
+Converted the duff TypeScript adapter to plain JS (~80 lines). One fix: the original
+returns `Buffer.from(u8)` for binary reads (Node.js only). For browser-only use, returning
+`Uint8Array` directly works — isomorphic-git's browser build accepts Uint8Array natively.
+Also added `handleCache.delete(path)` after `writeFile`/`unlink` to avoid stale handles.
+
+### CDN loading
+isomorphic-git loaded from `esm.sh/isomorphic-git@1` — esm.sh bundles all internal
+dependencies into a single ES module, which is more reliable than jsDelivr `+esm` for
+packages with complex internal imports.
+
+### dir: '/' convention
+isomorphic-git's `dir` parameter is the working directory root. With `dir: '/'` and the
+FSA adapter rooted at the picked folder, all paths resolve correctly:
+- `data.json` → rootHandle.getFileHandle('data.json')
+- `.git/HEAD` → rootHandle.getDirectoryHandle('.git') → getFileHandle('HEAD')
+- isomorphic-git's internal path.join('/', 'data.json') → '/data.json' → ['data.json'] ✓
+
+### First-run git init flow
+On `pickFolder()` or `init()` from IndexedDB:
+1. `git.resolveRef({ ref: 'HEAD' })` — if throws, no git exists
+2. `git.init({ defaultBranch: 'main' })` — creates .git/ in the folder
+3. Attempt initial commit if data.json already exists
+
+### The save loop
+`trySave()` is called on every `saveRecord()` / `deleteRecord()` and by a 30s auto-save timer.
+Flow:
+1. Get `currentHead = resolveRef('HEAD')`
+2. If `currentHead === baseCommit`: write data.json + git add + git commit
+3. If different: read current data.json from disk, call `threeWayMerge(baseData, ourRecords, diskData)`
+4. If no conflicts: apply merged, write, commit
+5. If conflicts: surface conflict UI, let user resolve field by field, then commit
+
+### Three-way merge logic
+Handles all cases from the spec:
+- Only ours changed → take ours
+- Only theirs changed → take theirs
+- Both changed identically → take either
+- Both changed differently → CONFLICT, default to ours, user can override
+- Record deleted by one side vs edited by other → CONFLICT (shown as special case)
+- New records added by one side → auto-merged (no conflict)
+
+### Git status badge
+Header shows three states:
+- `✓ committed` (green) — all changes are committed
+- `● unsaved` (orange) — local changes not yet committed
+- `⚠ conflict` (red) — merge conflict waiting to be resolved
+
+### Testing concurrent edits
+To test Phase 2: open `index.html` in two separate Chrome/Edge windows pointing at the
+same folder. Edit different fields in the same record in both windows. Save window 1,
+then save window 2 — window 2 should detect the concurrent commit and auto-merge.
+To trigger a conflict: edit the same field in both windows, save window 1 first, then
+save window 2 — the conflict UI should appear.
+
 ## What still needs validating on the actual corporate setup
 
 - Does Edge on a managed laptop allow `showDirectoryPicker()` at all? (Group policy may block it)

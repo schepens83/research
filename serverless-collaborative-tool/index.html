@@ -10,96 +10,85 @@
 
     header {
       background: #1a1a2e; color: #fff; padding: 12px 20px;
-      display: flex; align-items: center; gap: 12px;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
     }
     header h1 { font-size: 1rem; font-weight: 600; flex: 1; }
+    .header-btns { display: flex; gap: 8px; align-items: center; }
     header button { background: #2d2d4e; color: #ccc; border: 1px solid #444; border-radius: 4px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
     header button:hover { background: #3d3d6e; color: #fff; }
-    .folder-status { font-size: 0.75rem; color: #aaa; }
+    .folder-name { font-size: 0.75rem; color: #aaa; }
+    .git-badge {
+      font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 500;
+      background: #2d2d4e; color: #aaa; border: 1px solid #444;
+    }
+    .git-badge.clean { background: #1b3a1b; color: #6fcf6f; border-color: #4a7a4a; }
+    .git-badge.dirty { background: #3a2a1b; color: #f0a050; border-color: #7a5a2a; }
+    .git-badge.conflict { background: #3a1b1b; color: #f06060; border-color: #7a3a3a; }
 
-    .setup-screen {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 60vh; gap: 16px; padding: 20px;
-    }
+    .setup-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 16px; padding: 20px; }
     .setup-screen h2 { font-size: 1.2rem; color: #555; }
-    .setup-screen p { font-size: 0.9rem; color: #777; text-align: center; max-width: 400px; }
-    .btn-primary {
-      background: #4361ee; color: #fff; border: none; border-radius: 6px;
-      padding: 10px 24px; font-size: 1rem; cursor: pointer; font-weight: 500;
-    }
+    .setup-screen p { font-size: 0.9rem; color: #777; text-align: center; max-width: 420px; line-height: 1.5; }
+    .btn-primary { background: #4361ee; color: #fff; border: none; border-radius: 6px; padding: 10px 24px; font-size: 1rem; cursor: pointer; font-weight: 500; }
     .btn-primary:hover { background: #3451de; }
-    .btn-sm {
-      background: #4361ee; color: #fff; border: none; border-radius: 4px;
-      padding: 5px 12px; font-size: 0.8rem; cursor: pointer;
-    }
+    .btn-sm { background: #4361ee; color: #fff; border: none; border-radius: 4px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; }
     .btn-sm:hover { background: #3451de; }
     .btn-danger { background: #dc3545; }
     .btn-danger:hover { background: #c82333; }
-    .btn-ghost {
-      background: none; border: 1px solid #ccc; color: #555; border-radius: 4px;
-      padding: 5px 12px; font-size: 0.8rem; cursor: pointer;
-    }
+    .btn-ghost { background: none; border: 1px solid #ccc; color: #555; border-radius: 4px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; }
     .btn-ghost:hover { background: #f0f0f0; }
+    .btn-warn { background: #e67e22; color: #fff; border: none; border-radius: 4px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; }
+    .btn-warn:hover { background: #d35400; }
 
-    .toolbar {
-      padding: 12px 20px; display: flex; gap: 10px; align-items: center;
-      background: #fff; border-bottom: 1px solid #e0e0e0;
-    }
-    .toolbar input[type=search] {
-      flex: 1; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px;
-      font-size: 0.9rem; outline: none;
-    }
+    .toolbar { padding: 12px 20px; display: flex; gap: 10px; align-items: center; background: #fff; border-bottom: 1px solid #e0e0e0; }
+    .toolbar input[type=search] { flex: 1; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; outline: none; }
     .toolbar input[type=search]:focus { border-color: #4361ee; }
 
     .list { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
-    .record-card {
-      background: #fff; border: 1px solid #e0e0e0; border-radius: 6px;
-      padding: 12px 16px; cursor: pointer; transition: box-shadow 0.1s;
-    }
+    .record-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 16px; cursor: pointer; transition: box-shadow 0.1s; }
     .record-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-color: #4361ee; }
     .record-card h3 { font-size: 0.95rem; font-weight: 500; }
     .record-meta { font-size: 0.75rem; color: #888; margin-top: 4px; }
     .record-fields { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
-    .field-pill {
-      background: #f0f2f5; border: 1px solid #e0e0e0; border-radius: 3px;
-      padding: 2px 7px; font-size: 0.72rem; color: #555;
-    }
+    .field-pill { background: #f0f2f5; border: 1px solid #e0e0e0; border-radius: 3px; padding: 2px 7px; font-size: 0.72rem; color: #555; }
     .field-pill strong { color: #333; }
     .empty-state { text-align: center; color: #aaa; padding: 40px; font-size: 0.9rem; }
 
-    .edit-panel {
-      background: #fff; border-radius: 8px; margin: 16px 20px;
-      border: 1px solid #e0e0e0; padding: 20px;
-    }
+    .edit-panel { background: #fff; border-radius: 8px; margin: 16px 20px; border: 1px solid #e0e0e0; padding: 20px; }
     .edit-panel h2 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: #555; margin-bottom: 4px; }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px;
-      font-size: 0.9rem; font-family: inherit; outline: none;
-    }
+    .form-group input, .form-group textarea { width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; font-family: inherit; outline: none; }
     .form-group input:focus, .form-group textarea:focus { border-color: #4361ee; }
     .form-group textarea { resize: vertical; min-height: 60px; }
-
-    .kv-row {
-      display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px;
-    }
+    .kv-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
     .kv-row input { flex: 1; }
     .kv-row textarea { flex: 2; }
+    .form-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
 
-    .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+    /* Conflict resolution view */
+    .conflicts-panel { margin: 16px 20px; }
+    .conflicts-panel > h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #c0392b; }
+    .conflicts-panel > p { font-size: 0.85rem; color: #666; margin-bottom: 16px; line-height: 1.5; }
+    .conflict-card { background: #fff; border: 2px solid #e74c3c; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+    .conflict-card-header { background: #fdf2f2; padding: 10px 16px; border-bottom: 1px solid #f5c6c6; font-size: 0.85rem; font-weight: 600; color: #c0392b; }
+    .conflict-field { padding: 12px 16px; border-bottom: 1px solid #f0e0e0; }
+    .conflict-field:last-child { border-bottom: none; }
+    .conflict-field-name { font-size: 0.75rem; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .conflict-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .conflict-option { border: 2px solid #e0e0e0; border-radius: 6px; padding: 8px 12px; cursor: pointer; transition: all 0.1s; }
+    .conflict-option:hover { border-color: #4361ee; background: #f5f7ff; }
+    .conflict-option.selected { border-color: #4361ee; background: #ebefff; }
+    .conflict-option-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; color: #888; }
+    .conflict-option.selected .conflict-option-label { color: #4361ee; }
+    .conflict-option-value { font-size: 0.85rem; color: #333; white-space: pre-wrap; word-break: break-word; }
+    .conflicts-actions { display: flex; gap: 10px; margin-top: 8px; }
 
-    .statusbar {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: #1a1a2e; color: #aaa; font-size: 0.75rem;
-      padding: 4px 16px; text-align: center;
-    }
+    .banner { border-radius: 6px; padding: 10px 14px; margin: 12px 20px; font-size: 0.82rem; }
+    .banner-ok { background: #e8f5e9; border: 1px solid #a5d6a7; color: #2e7d32; }
+    .banner-warn { background: #fff3e0; border: 1px solid #ffcc80; color: #e65100; }
 
-    .phase0-banner {
-      background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 6px;
-      padding: 10px 14px; margin: 12px 20px; font-size: 0.8rem; color: #2e7d32;
-    }
-    .phase0-banner.warn { background: #fff3e0; border-color: #ffcc80; color: #e65100; }
+    .statusbar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; color: #aaa; font-size: 0.75rem; padding: 4px 16px; text-align: center; }
+    body { padding-bottom: 28px; }
   </style>
 </head>
 <body>
@@ -107,40 +96,38 @@
 
     <header>
       <h1>Research Tool</h1>
-      <span class="folder-status" x-text="dirHandle ? '📁 ' + dirHandle.name : 'No folder selected'"></span>
-      <button @click="pickFolder()" x-text="dirHandle ? 'Change folder' : 'Pick folder'"></button>
-      <button @click="setUsername()">👤 <span x-text="username"></span></button>
+      <span class="folder-name" x-text="dirHandle ? '📁 ' + dirHandle.name : ''"></span>
+      <template x-if="dirHandle">
+        <span class="git-badge"
+          :class="{ clean: gitStatus === 'clean', dirty: gitStatus === 'dirty', conflict: gitStatus === 'conflict' }"
+          x-text="gitStatus === 'clean' ? '✓ committed' : gitStatus === 'dirty' ? '● unsaved' : '⚠ conflict'">
+        </span>
+      </template>
+      <div class="header-btns">
+        <template x-if="dirHandle && gitStatus === 'dirty'">
+          <button @click="trySave()">Save now</button>
+        </template>
+        <button @click="pickFolder()" x-text="dirHandle ? 'Change folder' : 'Pick folder'"></button>
+        <button @click="setUsername()">👤 <span x-text="username"></span></button>
+      </div>
     </header>
 
-    <!-- FSA API support banner -->
     <template x-if="!fsaSupported">
-      <div class="phase0-banner warn">
-        ⚠️ File System Access API is not supported in this browser.
-        This tool requires a Chromium-based browser (Edge 86+, Chrome 86+).
-      </div>
+      <div class="banner banner-warn">⚠️ File System Access API not supported. This tool requires Chrome or Edge 86+.</div>
     </template>
 
-    <!-- Phase 0: no folder selected -->
     <template x-if="fsaSupported && !dirHandle">
       <div class="setup-screen">
         <h2>Pick a folder to get started</h2>
-        <p>
-          Select a folder on your local drive or shared network drive.
-          The tool will store <code>data.json</code> there and remember the folder
-          across sessions.
-        </p>
+        <p>Select a local folder or mapped network drive. The tool stores <code>data.json</code> and a <code>.git</code> directory there for versioned multi-user editing.</p>
         <button class="btn-primary" @click="pickFolder()">Pick folder</button>
       </div>
     </template>
 
-    <!-- Phase 1: folder selected -->
     <template x-if="dirHandle">
       <div>
-        <!-- Phase 0 validation success banner -->
         <template x-if="phase0ok">
-          <div class="phase0-banner">
-            ✓ Phase 0 validated: File System Access API can read/write this folder.
-          </div>
+          <div class="banner banner-ok">✓ Phase 0 + Phase 2 validated: FSA API works, git initialised in folder.</div>
         </template>
 
         <!-- List view -->
@@ -153,30 +140,22 @@
             <div class="list">
               <template x-if="filteredRecords.length === 0">
                 <div class="empty-state">
-                  <template x-if="search">
-                    <span>No records match "<span x-text="search"></span>"</span>
-                  </template>
-                  <template x-if="!search">
-                    <span>No records yet. Create your first record.</span>
-                  </template>
+                  <template x-if="search"><span>No records match "<span x-text="search"></span>"</span></template>
+                  <template x-if="!search"><span>No records yet. Create your first record.</span></template>
                 </div>
               </template>
               <template x-for="[id, rec] in filteredRecords" :key="id">
                 <div class="record-card" @click="editRecord(id)">
                   <h3 x-text="rec.title || '(untitled)'"></h3>
                   <div class="record-meta">
-                    <span x-text="id"></span>
-                    &nbsp;·&nbsp;
-                    <span x-text="rec._updated_by || '?'"></span>
-                    &nbsp;·&nbsp;
+                    <span x-text="id"></span>&nbsp;·&nbsp;
+                    <span x-text="rec._updated_by || '?'"></span>&nbsp;·&nbsp;
                     <span x-text="rec._updated_at ? new Date(rec._updated_at).toLocaleString() : ''"></span>
                   </div>
                   <template x-if="userFields(rec).length > 0">
                     <div class="record-fields">
                       <template x-for="[k, v] in userFields(rec)" :key="k">
-                        <span class="field-pill">
-                          <strong x-text="k"></strong>:&nbsp;<span x-text="String(v).slice(0, 60)"></span>
-                        </span>
+                        <span class="field-pill"><strong x-text="k"></strong>:&nbsp;<span x-text="String(v).slice(0, 60)"></span></span>
                       </template>
                     </div>
                   </template>
@@ -190,12 +169,10 @@
         <template x-if="view === 'edit'">
           <div class="edit-panel">
             <h2 x-text="editingId ? 'Edit record' : 'New record'"></h2>
-
             <div class="form-group">
               <label>Title</label>
               <input type="text" x-model="editForm.title" placeholder="Record title">
             </div>
-
             <div class="form-group">
               <label>Fields</label>
               <template x-for="(field, idx) in editForm.fields" :key="idx">
@@ -207,13 +184,54 @@
               </template>
               <button class="btn-ghost" @click="addField()">+ Add field</button>
             </div>
-
             <div class="form-actions">
               <button class="btn-primary" @click="saveRecord()">Save</button>
               <button class="btn-ghost" @click="view = 'list'">Cancel</button>
               <template x-if="editingId">
                 <button class="btn-sm btn-danger" style="margin-left:auto" @click="deleteRecord(editingId)">Delete</button>
               </template>
+            </div>
+          </div>
+        </template>
+
+        <!-- Conflict resolution view -->
+        <template x-if="view === 'conflicts'">
+          <div class="conflicts-panel">
+            <h2>⚠ Merge Conflict</h2>
+            <p>
+              Someone else saved changes to this folder while you were editing.
+              The tool auto-merged non-overlapping changes.
+              Resolve the fields below, then confirm to save.
+            </p>
+            <template x-for="conflict in pendingMerge.conflicts" :key="conflict.id">
+              <div class="conflict-card">
+                <div class="conflict-card-header"
+                  x-text="conflict.id + (pendingMerge.merged[conflict.id]?.title ? ' — ' + pendingMerge.merged[conflict.id].title : '')">
+                </div>
+                <template x-for="field in conflict.fields" :key="field.field">
+                  <div class="conflict-field">
+                    <div class="conflict-field-name" x-text="field.field"></div>
+                    <div class="conflict-options">
+                      <div class="conflict-option"
+                        :class="{ selected: pendingMerge.merged[conflict.id]?.[field.field] === field.ours }"
+                        @click="resolveField(conflict.id, field.field, field.ours)">
+                        <div class="conflict-option-label">Mine (<span x-text="username"></span>)</div>
+                        <div class="conflict-option-value" x-text="field.ours ?? '(deleted)'"></div>
+                      </div>
+                      <div class="conflict-option"
+                        :class="{ selected: pendingMerge.merged[conflict.id]?.[field.field] !== field.ours }"
+                        @click="resolveField(conflict.id, field.field, field.theirs)">
+                        <div class="conflict-option-label">Theirs</div>
+                        <div class="conflict-option-value" x-text="field.theirs ?? '(deleted)'"></div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </template>
+            <div class="conflicts-actions">
+              <button class="btn-primary" @click="commitResolved()">Confirm &amp; Save resolved</button>
+              <button class="btn-ghost" @click="view = 'list'">Cancel (discard my changes)</button>
             </div>
           </div>
         </template>
@@ -226,33 +244,214 @@
   <script type="importmap">
   {
     "imports": {
-      "idb-keyval": "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm"
+      "idb-keyval": "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm",
+      "isomorphic-git": "https://esm.sh/isomorphic-git@1"
     }
   }
   </script>
 
   <script type="module">
     import { get, set } from 'idb-keyval';
+    import * as git from 'isomorphic-git';
 
-    const DATA_FILE = 'data.json';
-    const HANDLE_KEY = 'dirHandle';
+    // ─── FSA → isomorphic-git adapter ──────────────────────────────────────────
+    // Adapted from github.com/chigichan24/duff (MIT). Translates isomorphic-git's
+    // Node-style fs.promises calls into File System Access API operations.
+
+    const _adapterCache = new WeakMap();
+
+    function _splitPath(path) {
+      return path.split('/').filter(p => p && p !== '.');
+    }
+    function _splitParentAndName(path) {
+      const parts = _splitPath(path);
+      const name = parts.pop();
+      return { parentPath: parts.join('/'), name };
+    }
+
+    function createFsaAdapter(rootHandle) {
+      if (_adapterCache.has(rootHandle)) return _adapterCache.get(rootHandle);
+      const handleCache = new Map();
+
+      const getHandle = async (pathStr) => {
+        if (!pathStr || pathStr === '.' || pathStr === '/') return rootHandle;
+        if (handleCache.has(pathStr)) return handleCache.get(pathStr);
+        const parts = _splitPath(pathStr);
+        let current = rootHandle;
+        let currentPath = '';
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+          currentPath += (currentPath ? '/' : '') + part;
+          if (handleCache.has(currentPath)) { current = handleCache.get(currentPath); continue; }
+          try {
+            current = i < parts.length - 1
+              ? await current.getDirectoryHandle(part)
+              : await (async () => { try { return await current.getFileHandle(part); } catch { return await current.getDirectoryHandle(part); } })();
+            handleCache.set(currentPath, current);
+          } catch {
+            throw Object.assign(new Error(`ENOENT: ${pathStr}`), { code: 'ENOENT' });
+          }
+        }
+        return current;
+      };
+
+      const fs = {
+        async readFile(path, options) {
+          const handle = await getHandle(path);
+          if (handle.kind !== 'file') throw Object.assign(new Error('EISDIR'), { code: 'EISDIR' });
+          const file = await handle.getFile();
+          const buf = await file.arrayBuffer();
+          const u8 = new Uint8Array(buf);
+          const enc = typeof options === 'string' ? options : options?.encoding;
+          return (enc === 'utf8' || enc === 'utf-8') ? new TextDecoder().decode(u8) : u8;
+        },
+        async writeFile(path, data) {
+          const { parentPath, name } = _splitParentAndName(path);
+          let dir = rootHandle;
+          for (const p of _splitPath(parentPath)) dir = await dir.getDirectoryHandle(p, { create: true });
+          const fh = await dir.getFileHandle(name, { create: true });
+          const w = await fh.createWritable();
+          await w.write(data);
+          await w.close();
+          // invalidate cached handle so next read sees new content
+          handleCache.delete(path);
+        },
+        async readdir(path) {
+          const handle = await getHandle(path || '.');
+          if (handle.kind !== 'directory') throw Object.assign(new Error('ENOTDIR'), { code: 'ENOTDIR' });
+          const names = [];
+          for await (const name of handle.keys()) names.push(name);
+          return names;
+        },
+        async stat(path) {
+          const handle = await getHandle(path || '.');
+          const isFile = handle.kind === 'file';
+          const file = isFile ? await handle.getFile() : null;
+          const mtimeMs = file ? file.lastModified : Date.now();
+          return {
+            isFile: () => isFile, isDirectory: () => !isFile, isSymbolicLink: () => false,
+            size: file?.size ?? 0, mtimeMs, mtime: new Date(mtimeMs),
+            ctimeMs: mtimeMs, ctime: new Date(mtimeMs),
+            atimeMs: mtimeMs, atime: new Date(mtimeMs),
+            mode: isFile ? 0o100644 : 0o040755, uid: 0, gid: 0, dev: 0, ino: 0,
+          };
+        },
+        async lstat(path) { return fs.stat(path); },
+        async unlink(path) {
+          const { parentPath, name } = _splitParentAndName(path);
+          const parent = await getHandle(parentPath);
+          await parent.removeEntry(name);
+          handleCache.delete(path);
+        },
+        async mkdir(path) {
+          let current = rootHandle;
+          for (const p of _splitPath(path)) current = await current.getDirectoryHandle(p, { create: true });
+        },
+        async rmdir(path) {
+          const { parentPath, name } = _splitParentAndName(path);
+          const parent = await getHandle(parentPath);
+          await parent.removeEntry(name, { recursive: true });
+          handleCache.delete(path);
+        },
+        async readlink() { return ''; },
+        async symlink() {},
+      };
+      fs.promises = fs;
+      _adapterCache.set(rootHandle, fs);
+      return fs;
+    }
+
+    // ─── Utilities ─────────────────────────────────────────────────────────────
 
     function serialize(data) {
-      const sortObj = o => Object.fromEntries(
-        Object.keys(o).sort().map(k => [k, o[k]])
-      );
+      const sortObj = o => Object.fromEntries(Object.keys(o).sort().map(k => [k, o[k]]));
       const top = sortObj(data);
       for (const id of Object.keys(top)) {
-        if (typeof top[id] === 'object' && top[id] !== null) {
+        if (top[id] && typeof top[id] === 'object' && !Array.isArray(top[id])) {
           top[id] = sortObj(top[id]);
         }
       }
       return JSON.stringify(top, null, 2);
     }
 
+    function deepCopy(obj) { return JSON.parse(JSON.stringify(obj)); }
+
     function newId() {
       return 'REC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
     }
+
+    // ─── Three-way merge ───────────────────────────────────────────────────────
+    // base  = committed state when we loaded
+    // ours  = base + our in-memory edits
+    // theirs = current on-disk state (committed by someone else)
+    // Returns { data: merged object, conflicts: [] }
+
+    function threeWayMerge(base, ours, theirs) {
+      const conflicts = [];
+      const result = {};
+      const allIds = new Set([...Object.keys(base), ...Object.keys(ours), ...Object.keys(theirs)]);
+
+      for (const id of allIds) {
+        const b = base[id], o = ours[id], t = theirs[id];
+        const eq = (x, y) => JSON.stringify(x) === JSON.stringify(y);
+
+        // Deletion cases
+        if (!o && b && eq(b, t)) { continue; }          // we deleted, they left alone → delete
+        if (!t && b && eq(b, o)) { continue; }          // they deleted, we left alone → delete
+        if (!o && !t) { continue; }                      // both deleted
+        if (!o && b && !eq(b, t)) {                     // we deleted, they edited → keep theirs
+          conflicts.push({ id, type: 'delete-vs-edit', fields: [{ field: '(record)', base: b, ours: null, theirs: t }] });
+          result[id] = t; continue;
+        }
+        if (!t && b && !eq(b, o)) {                     // they deleted, we edited → keep ours
+          conflicts.push({ id, type: 'edit-vs-delete', fields: [{ field: '(record)', base: b, ours: o, theirs: null }] });
+          result[id] = o; continue;
+        }
+
+        // New records added by one side
+        if (!b && o && !t) { result[id] = o; continue; }
+        if (!b && !o && t) { result[id] = t; continue; }
+        if (!b && o && t && eq(o, t)) { result[id] = o; continue; }
+
+        // Field-level merge
+        const mergedRec = {};
+        const fieldConflicts = [];
+        const allFields = new Set([
+          ...Object.keys(b ?? {}),
+          ...Object.keys(o ?? {}),
+          ...Object.keys(t ?? {}),
+        ]);
+
+        for (const field of allFields) {
+          const bv = b?.[field], ov = o?.[field], tv = t?.[field];
+          const ourChanged = !eq(ov, bv);
+          const theirChanged = !eq(tv, bv);
+          if (!ourChanged && !theirChanged) { mergedRec[field] = bv; }
+          else if (ourChanged && !theirChanged) { mergedRec[field] = ov; }
+          else if (!ourChanged && theirChanged) { mergedRec[field] = tv; }
+          else if (eq(ov, tv)) { mergedRec[field] = ov; }
+          else {
+            fieldConflicts.push({ field, base: bv, ours: ov, theirs: tv });
+            mergedRec[field] = ov; // default to ours; user can override in UI
+          }
+        }
+
+        if (fieldConflicts.length > 0) conflicts.push({ id, type: 'field', fields: fieldConflicts });
+        result[id] = mergedRec;
+      }
+
+      return { data: result, conflicts };
+    }
+
+    // ─── Module-level state ────────────────────────────────────────────────────
+
+    let fsAdapter = null;
+    let baseData = {};
+    let baseCommit = null;
+    let autoSaveTimer = null;
+    let isSaving = false;
+
+    // ─── Alpine component ──────────────────────────────────────────────────────
 
     document.addEventListener('alpine:init', () => {
       Alpine.data('app', () => ({
@@ -265,83 +464,180 @@
         editingId: null,
         editForm: { title: '', fields: [] },
         status: 'Pick a folder to begin.',
+        gitStatus: 'clean',    // 'clean' | 'dirty' | 'conflict'
         phase0ok: false,
+        pendingMerge: null,
 
         async init() {
-          if (!this.fsaSupported) {
-            this.status = 'File System Access API not supported.';
-            return;
-          }
-          const stored = await get(HANDLE_KEY);
+          if (!this.fsaSupported) { this.status = 'File System Access API not supported.'; return; }
+          const stored = await get('dirHandle');
           if (stored) {
             try {
               const perm = await stored.requestPermission({ mode: 'readwrite' });
               if (perm === 'granted') {
                 this.dirHandle = stored;
-                await this.loadData();
+                fsAdapter = createFsaAdapter(stored);
+                await this._ensureGit();
+                await this._loadAndTrackBase();
+                this._startAutoSave();
               } else {
                 this.status = 'Permission denied for stored folder. Pick a folder to continue.';
               }
-            } catch {
-              this.status = 'Stored folder is no longer accessible. Pick a folder.';
-            }
+            } catch { this.status = 'Stored folder inaccessible. Pick a new folder.'; }
           }
         },
 
         async pickFolder() {
           try {
             const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
-            await set(HANDLE_KEY, handle);
+            await set('dirHandle', handle);
             this.dirHandle = handle;
+            fsAdapter = createFsaAdapter(handle);
+            await this._ensureGit();
+            await this._loadAndTrackBase();
             this.phase0ok = true;
-            await this.loadData();
+            this._startAutoSave();
           } catch (e) {
-            if (e.name !== 'AbortError') this.status = 'Error picking folder: ' + e.message;
+            if (e.name !== 'AbortError') this.status = 'Error: ' + e.message;
           }
         },
 
-        async loadData() {
+        async _ensureGit() {
           try {
-            const fh = await this.dirHandle.getFileHandle(DATA_FILE, { create: true });
+            await git.resolveRef({ fs: fsAdapter, dir: '/', ref: 'HEAD' });
+          } catch {
+            // No git yet — initialise and make first commit if data exists
+            await git.init({ fs: fsAdapter, dir: '/', defaultBranch: 'main' });
+            this.status = 'Git initialised in folder.';
+            try {
+              await git.add({ fs: fsAdapter, dir: '/', filepath: 'data.json' });
+              await this._doCommit('Initial commit');
+            } catch { /* data.json might not exist yet */ }
+          }
+        },
+
+        async _loadAndTrackBase() {
+          try {
+            const fh = await this.dirHandle.getFileHandle('data.json', { create: true });
             const file = await fh.getFile();
             const text = await file.text();
-            this.records = text.trim() ? JSON.parse(text) : {};
-            const count = Object.keys(this.records).length;
+            const data = text.trim() ? JSON.parse(text) : {};
+            this.records = data;
+            baseData = deepCopy(data);
+            baseCommit = await this._headSha();
+            const count = Object.keys(data).length;
             this.status = count === 0
               ? 'Folder connected. No records yet.'
-              : `Loaded ${count} record${count === 1 ? '' : 's'} from ${DATA_FILE}.`;
+              : `Loaded ${count} record${count === 1 ? '' : 's'}.`;
+            this.gitStatus = 'clean';
           } catch (e) {
             this.status = 'Load error: ' + e.message;
           }
         },
 
-        async saveData() {
+        async _headSha() {
+          try { return await git.resolveRef({ fs: fsAdapter, dir: '/', ref: 'HEAD' }); }
+          catch { return null; }
+        },
+
+        async _doCommit(message) {
+          return git.commit({
+            fs: fsAdapter,
+            dir: '/',
+            message: message ?? `Update by ${this.username} at ${new Date().toISOString()}`,
+            author: {
+              name: this.username,
+              email: `${this.username.replace(/\s+/g, '.')}@local`,
+              timestamp: Math.floor(Date.now() / 1000),
+              timezoneOffset: new Date().getTimezoneOffset(),
+            },
+          });
+        },
+
+        async _writeAndCommit(data) {
+          const fh = await this.dirHandle.getFileHandle('data.json', { create: true });
+          const w = await fh.createWritable();
+          await w.write(serialize(data));
+          await w.close();
+          await git.add({ fs: fsAdapter, dir: '/', filepath: 'data.json' });
+          const sha = await this._doCommit();
+          baseData = deepCopy(data);
+          baseCommit = sha;
+          this.gitStatus = 'clean';
+          this.status = `Saved & committed ${Object.keys(data).length} records.`;
+        },
+
+        async trySave() {
+          if (isSaving || this.gitStatus !== 'dirty') return;
+          isSaving = true;
           try {
-            const fh = await this.dirHandle.getFileHandle(DATA_FILE, { create: true });
-            const writable = await fh.createWritable();
-            await writable.write(serialize(this.records));
-            await writable.close();
-            const count = Object.keys(this.records).length;
-            this.status = `Saved — ${count} record${count === 1 ? '' : 's'} in ${DATA_FILE}.`;
+            const currentHead = await this._headSha();
+
+            if (currentHead === baseCommit) {
+              // Fast path: no concurrent changes
+              await this._writeAndCommit(this.records);
+            } else {
+              // Someone else committed since we loaded — read current disk state
+              const fh = await this.dirHandle.getFileHandle('data.json');
+              const file = await fh.getFile();
+              const text = await file.text();
+              const diskData = text.trim() ? JSON.parse(text) : {};
+              const { data: merged, conflicts } = threeWayMerge(baseData, this.records, diskData);
+
+              if (conflicts.length > 0) {
+                // Update merged data to include auto-merged records
+                this.records = merged;
+                this.pendingMerge = { merged: deepCopy(merged), conflicts };
+                this.view = 'conflicts';
+                this.gitStatus = 'conflict';
+                this.status = `${conflicts.length} conflict${conflicts.length === 1 ? '' : 's'} need resolving.`;
+                // Update baseCommit to theirs so next cycle is relative to current disk state
+                baseCommit = currentHead;
+              } else {
+                this.records = merged;
+                await this._writeAndCommit(merged);
+              }
+            }
           } catch (e) {
             this.status = 'Save error: ' + e.message;
+          } finally {
+            isSaving = false;
           }
         },
+
+        _startAutoSave() {
+          if (autoSaveTimer) clearInterval(autoSaveTimer);
+          autoSaveTimer = setInterval(() => this.trySave(), 30_000);
+        },
+
+        // ── Conflict resolution ──
+
+        resolveField(recordId, fieldName, value) {
+          // Update pendingMerge.merged with the chosen value
+          const rec = this.pendingMerge.merged[recordId];
+          if (rec) rec[fieldName] = value;
+          // Trigger Alpine reactivity
+          this.pendingMerge = { ...this.pendingMerge, merged: { ...this.pendingMerge.merged } };
+        },
+
+        async commitResolved() {
+          this.records = this.pendingMerge.merged;
+          this.pendingMerge = null;
+          this.gitStatus = 'dirty';
+          await this._writeAndCommit(this.records);
+          this.view = 'list';
+        },
+
+        // ── Record CRUD ──
 
         get filteredRecords() {
           const q = this.search.trim().toLowerCase();
           return Object.entries(this.records)
             .filter(([id, r]) => {
               if (!q) return true;
-              const blob = [
-                id,
-                ...Object.values(r).map(v => String(v))
-              ].join(' ').toLowerCase();
-              return blob.includes(q);
+              return [id, ...Object.values(r).map(String)].join(' ').toLowerCase().includes(q);
             })
-            .sort((a, b) =>
-              (b[1]._updated_at || '').localeCompare(a[1]._updated_at || '')
-            );
+            .sort((a, b) => (b[1]._updated_at || '').localeCompare(a[1]._updated_at || ''));
         },
 
         userFields(rec) {
@@ -358,21 +654,16 @@
         editRecord(id) {
           const r = this.records[id];
           const reserved = new Set(['title', '_id', '_updated_by', '_updated_at']);
-          const fields = Object.entries(r)
-            .filter(([k]) => !reserved.has(k))
-            .map(([key, value]) => ({ key, value: String(value) }));
-          this.editForm = { title: r.title || '', fields };
+          this.editForm = {
+            title: r.title || '',
+            fields: Object.entries(r).filter(([k]) => !reserved.has(k)).map(([key, value]) => ({ key, value: String(value) })),
+          };
           this.editingId = id;
           this.view = 'edit';
         },
 
-        addField() {
-          this.editForm.fields.push({ key: '', value: '' });
-        },
-
-        removeField(idx) {
-          this.editForm.fields.splice(idx, 1);
-        },
+        addField() { this.editForm.fields.push({ key: '', value: '' }); },
+        removeField(idx) { this.editForm.fields.splice(idx, 1); },
 
         async saveRecord() {
           const id = this.editingId || newId();
@@ -386,21 +677,25 @@
             const k = key.trim();
             if (k && !k.startsWith('_')) record[k] = value;
           }
-          this.records[id] = record;
-          await this.saveData();
+          this.records = { ...this.records, [id]: record };
+          this.gitStatus = 'dirty';
           this.view = 'list';
+          await this.trySave();
         },
 
         async deleteRecord(id) {
           if (!confirm('Delete this record?')) return;
-          delete this.records[id];
-          await this.saveData();
+          const updated = { ...this.records };
+          delete updated[id];
+          this.records = updated;
+          this.gitStatus = 'dirty';
           this.view = 'list';
+          await this.trySave();
         },
 
         setUsername() {
           const name = prompt('Enter your name (used in _updated_by):', this.username);
-          if (name && name.trim()) {
+          if (name?.trim()) {
             this.username = name.trim();
             localStorage.setItem('username', this.username);
             this.status = `Username set to "${this.username}".`;
