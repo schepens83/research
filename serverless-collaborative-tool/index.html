@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Tool</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f0f2f5; color: #1a1a2e; min-height: 100vh; }
+
+    header {
+      background: #1a1a2e; color: #fff; padding: 12px 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    header h1 { font-size: 1rem; font-weight: 600; flex: 1; }
+    header button { background: #2d2d4e; color: #ccc; border: 1px solid #444; border-radius: 4px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
+    header button:hover { background: #3d3d6e; color: #fff; }
+    .folder-status { font-size: 0.75rem; color: #aaa; }
+
+    .setup-screen {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 60vh; gap: 16px; padding: 20px;
+    }
+    .setup-screen h2 { font-size: 1.2rem; color: #555; }
+    .setup-screen p { font-size: 0.9rem; color: #777; text-align: center; max-width: 400px; }
+    .btn-primary {
+      background: #4361ee; color: #fff; border: none; border-radius: 6px;
+      padding: 10px 24px; font-size: 1rem; cursor: pointer; font-weight: 500;
+    }
+    .btn-primary:hover { background: #3451de; }
+    .btn-sm {
+      background: #4361ee; color: #fff; border: none; border-radius: 4px;
+      padding: 5px 12px; font-size: 0.8rem; cursor: pointer;
+    }
+    .btn-sm:hover { background: #3451de; }
+    .btn-danger { background: #dc3545; }
+    .btn-danger:hover { background: #c82333; }
+    .btn-ghost {
+      background: none; border: 1px solid #ccc; color: #555; border-radius: 4px;
+      padding: 5px 12px; font-size: 0.8rem; cursor: pointer;
+    }
+    .btn-ghost:hover { background: #f0f0f0; }
+
+    .toolbar {
+      padding: 12px 20px; display: flex; gap: 10px; align-items: center;
+      background: #fff; border-bottom: 1px solid #e0e0e0;
+    }
+    .toolbar input[type=search] {
+      flex: 1; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px;
+      font-size: 0.9rem; outline: none;
+    }
+    .toolbar input[type=search]:focus { border-color: #4361ee; }
+
+    .list { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+    .record-card {
+      background: #fff; border: 1px solid #e0e0e0; border-radius: 6px;
+      padding: 12px 16px; cursor: pointer; transition: box-shadow 0.1s;
+    }
+    .record-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-color: #4361ee; }
+    .record-card h3 { font-size: 0.95rem; font-weight: 500; }
+    .record-meta { font-size: 0.75rem; color: #888; margin-top: 4px; }
+    .record-fields { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .field-pill {
+      background: #f0f2f5; border: 1px solid #e0e0e0; border-radius: 3px;
+      padding: 2px 7px; font-size: 0.72rem; color: #555;
+    }
+    .field-pill strong { color: #333; }
+    .empty-state { text-align: center; color: #aaa; padding: 40px; font-size: 0.9rem; }
+
+    .edit-panel {
+      background: #fff; border-radius: 8px; margin: 16px 20px;
+      border: 1px solid #e0e0e0; padding: 20px;
+    }
+    .edit-panel h2 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: #555; margin-bottom: 4px; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 7px 10px; border: 1px solid #ccc; border-radius: 4px;
+      font-size: 0.9rem; font-family: inherit; outline: none;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: #4361ee; }
+    .form-group textarea { resize: vertical; min-height: 60px; }
+
+    .kv-row {
+      display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px;
+    }
+    .kv-row input { flex: 1; }
+    .kv-row textarea { flex: 2; }
+
+    .form-actions { display: flex; gap: 8px; margin-top: 16px; }
+
+    .statusbar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #1a1a2e; color: #aaa; font-size: 0.75rem;
+      padding: 4px 16px; text-align: center;
+    }
+
+    .phase0-banner {
+      background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 6px;
+      padding: 10px 14px; margin: 12px 20px; font-size: 0.8rem; color: #2e7d32;
+    }
+    .phase0-banner.warn { background: #fff3e0; border-color: #ffcc80; color: #e65100; }
+  </style>
+</head>
+<body>
+  <div x-data="app" x-init="init()">
+
+    <header>
+      <h1>Research Tool</h1>
+      <span class="folder-status" x-text="dirHandle ? '📁 ' + dirHandle.name : 'No folder selected'"></span>
+      <button @click="pickFolder()" x-text="dirHandle ? 'Change folder' : 'Pick folder'"></button>
+      <button @click="setUsername()">👤 <span x-text="username"></span></button>
+    </header>
+
+    <!-- FSA API support banner -->
+    <template x-if="!fsaSupported">
+      <div class="phase0-banner warn">
+        ⚠️ File System Access API is not supported in this browser.
+        This tool requires a Chromium-based browser (Edge 86+, Chrome 86+).
+      </div>
+    </template>
+
+    <!-- Phase 0: no folder selected -->
+    <template x-if="fsaSupported && !dirHandle">
+      <div class="setup-screen">
+        <h2>Pick a folder to get started</h2>
+        <p>
+          Select a folder on your local drive or shared network drive.
+          The tool will store <code>data.json</code> there and remember the folder
+          across sessions.
+        </p>
+        <button class="btn-primary" @click="pickFolder()">Pick folder</button>
+      </div>
+    </template>
+
+    <!-- Phase 1: folder selected -->
+    <template x-if="dirHandle">
+      <div>
+        <!-- Phase 0 validation success banner -->
+        <template x-if="phase0ok">
+          <div class="phase0-banner">
+            ✓ Phase 0 validated: File System Access API can read/write this folder.
+          </div>
+        </template>
+
+        <!-- List view -->
+        <template x-if="view === 'list'">
+          <div>
+            <div class="toolbar">
+              <input type="search" placeholder="Search records…" x-model="search">
+              <button class="btn-sm" @click="newRecord()">+ New record</button>
+            </div>
+            <div class="list">
+              <template x-if="filteredRecords.length === 0">
+                <div class="empty-state">
+                  <template x-if="search">
+                    <span>No records match "<span x-text="search"></span>"</span>
+                  </template>
+                  <template x-if="!search">
+                    <span>No records yet. Create your first record.</span>
+                  </template>
+                </div>
+              </template>
+              <template x-for="[id, rec] in filteredRecords" :key="id">
+                <div class="record-card" @click="editRecord(id)">
+                  <h3 x-text="rec.title || '(untitled)'"></h3>
+                  <div class="record-meta">
+                    <span x-text="id"></span>
+                    &nbsp;·&nbsp;
+                    <span x-text="rec._updated_by || '?'"></span>
+                    &nbsp;·&nbsp;
+                    <span x-text="rec._updated_at ? new Date(rec._updated_at).toLocaleString() : ''"></span>
+                  </div>
+                  <template x-if="userFields(rec).length > 0">
+                    <div class="record-fields">
+                      <template x-for="[k, v] in userFields(rec)" :key="k">
+                        <span class="field-pill">
+                          <strong x-text="k"></strong>:&nbsp;<span x-text="String(v).slice(0, 60)"></span>
+                        </span>
+                      </template>
+                    </div>
+                  </template>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+
+        <!-- Edit view -->
+        <template x-if="view === 'edit'">
+          <div class="edit-panel">
+            <h2 x-text="editingId ? 'Edit record' : 'New record'"></h2>
+
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" x-model="editForm.title" placeholder="Record title">
+            </div>
+
+            <div class="form-group">
+              <label>Fields</label>
+              <template x-for="(field, idx) in editForm.fields" :key="idx">
+                <div class="kv-row">
+                  <input type="text" placeholder="key" x-model="field.key">
+                  <textarea placeholder="value" x-model="field.value" rows="2"></textarea>
+                  <button class="btn-sm btn-danger" @click="removeField(idx)">✕</button>
+                </div>
+              </template>
+              <button class="btn-ghost" @click="addField()">+ Add field</button>
+            </div>
+
+            <div class="form-actions">
+              <button class="btn-primary" @click="saveRecord()">Save</button>
+              <button class="btn-ghost" @click="view = 'list'">Cancel</button>
+              <template x-if="editingId">
+                <button class="btn-sm btn-danger" style="margin-left:auto" @click="deleteRecord(editingId)">Delete</button>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </template>
+
+    <div class="statusbar" x-text="status"></div>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "idb-keyval": "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import { get, set } from 'idb-keyval';
+
+    const DATA_FILE = 'data.json';
+    const HANDLE_KEY = 'dirHandle';
+
+    function serialize(data) {
+      const sortObj = o => Object.fromEntries(
+        Object.keys(o).sort().map(k => [k, o[k]])
+      );
+      const top = sortObj(data);
+      for (const id of Object.keys(top)) {
+        if (typeof top[id] === 'object' && top[id] !== null) {
+          top[id] = sortObj(top[id]);
+        }
+      }
+      return JSON.stringify(top, null, 2);
+    }
+
+    function newId() {
+      return 'REC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    }
+
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('app', () => ({
+        fsaSupported: typeof window.showDirectoryPicker === 'function',
+        dirHandle: null,
+        username: localStorage.getItem('username') || 'user',
+        records: {},
+        search: '',
+        view: 'list',
+        editingId: null,
+        editForm: { title: '', fields: [] },
+        status: 'Pick a folder to begin.',
+        phase0ok: false,
+
+        async init() {
+          if (!this.fsaSupported) {
+            this.status = 'File System Access API not supported.';
+            return;
+          }
+          const stored = await get(HANDLE_KEY);
+          if (stored) {
+            try {
+              const perm = await stored.requestPermission({ mode: 'readwrite' });
+              if (perm === 'granted') {
+                this.dirHandle = stored;
+                await this.loadData();
+              } else {
+                this.status = 'Permission denied for stored folder. Pick a folder to continue.';
+              }
+            } catch {
+              this.status = 'Stored folder is no longer accessible. Pick a folder.';
+            }
+          }
+        },
+
+        async pickFolder() {
+          try {
+            const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
+            await set(HANDLE_KEY, handle);
+            this.dirHandle = handle;
+            this.phase0ok = true;
+            await this.loadData();
+          } catch (e) {
+            if (e.name !== 'AbortError') this.status = 'Error picking folder: ' + e.message;
+          }
+        },
+
+        async loadData() {
+          try {
+            const fh = await this.dirHandle.getFileHandle(DATA_FILE, { create: true });
+            const file = await fh.getFile();
+            const text = await file.text();
+            this.records = text.trim() ? JSON.parse(text) : {};
+            const count = Object.keys(this.records).length;
+            this.status = count === 0
+              ? 'Folder connected. No records yet.'
+              : `Loaded ${count} record${count === 1 ? '' : 's'} from ${DATA_FILE}.`;
+          } catch (e) {
+            this.status = 'Load error: ' + e.message;
+          }
+        },
+
+        async saveData() {
+          try {
+            const fh = await this.dirHandle.getFileHandle(DATA_FILE, { create: true });
+            const writable = await fh.createWritable();
+            await writable.write(serialize(this.records));
+            await writable.close();
+            const count = Object.keys(this.records).length;
+            this.status = `Saved — ${count} record${count === 1 ? '' : 's'} in ${DATA_FILE}.`;
+          } catch (e) {
+            this.status = 'Save error: ' + e.message;
+          }
+        },
+
+        get filteredRecords() {
+          const q = this.search.trim().toLowerCase();
+          return Object.entries(this.records)
+            .filter(([id, r]) => {
+              if (!q) return true;
+              const blob = [
+                id,
+                ...Object.values(r).map(v => String(v))
+              ].join(' ').toLowerCase();
+              return blob.includes(q);
+            })
+            .sort((a, b) =>
+              (b[1]._updated_at || '').localeCompare(a[1]._updated_at || '')
+            );
+        },
+
+        userFields(rec) {
+          const reserved = new Set(['title', '_id', '_updated_by', '_updated_at']);
+          return Object.entries(rec).filter(([k]) => !reserved.has(k));
+        },
+
+        newRecord() {
+          this.editingId = null;
+          this.editForm = { title: '', fields: [] };
+          this.view = 'edit';
+        },
+
+        editRecord(id) {
+          const r = this.records[id];
+          const reserved = new Set(['title', '_id', '_updated_by', '_updated_at']);
+          const fields = Object.entries(r)
+            .filter(([k]) => !reserved.has(k))
+            .map(([key, value]) => ({ key, value: String(value) }));
+          this.editForm = { title: r.title || '', fields };
+          this.editingId = id;
+          this.view = 'edit';
+        },
+
+        addField() {
+          this.editForm.fields.push({ key: '', value: '' });
+        },
+
+        removeField(idx) {
+          this.editForm.fields.splice(idx, 1);
+        },
+
+        async saveRecord() {
+          const id = this.editingId || newId();
+          const record = {
+            _id: id,
+            _updated_at: new Date().toISOString(),
+            _updated_by: this.username,
+            title: this.editForm.title || '(untitled)',
+          };
+          for (const { key, value } of this.editForm.fields) {
+            const k = key.trim();
+            if (k && !k.startsWith('_')) record[k] = value;
+          }
+          this.records[id] = record;
+          await this.saveData();
+          this.view = 'list';
+        },
+
+        async deleteRecord(id) {
+          if (!confirm('Delete this record?')) return;
+          delete this.records[id];
+          await this.saveData();
+          this.view = 'list';
+        },
+
+        setUsername() {
+          const name = prompt('Enter your name (used in _updated_by):', this.username);
+          if (name && name.trim()) {
+            this.username = name.trim();
+            localStorage.setItem('username', this.username);
+            this.status = `Username set to "${this.username}".`;
+          }
+        },
+      }));
+    });
+  </script>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"></script>
+</body>
+</html>
