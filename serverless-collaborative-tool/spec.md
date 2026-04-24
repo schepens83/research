@@ -221,6 +221,60 @@ Goal: keep startup, save, and merge performance acceptable as the dataset grows,
 
 This phase is a scaling/hardening phase, not a current implementation target. Prefer this over adopting SQLite as the primary store. SQLite can still be added later as an optional read-side cache or index, but not as the canonical collaborative data format.
 
+#### Phase 5 attachment and thumbnail design note
+
+Recommended attachment layout:
+
+```
+index.json
+records/
+  REC-123.json
+attachments/
+  REC-123/
+    original-photo.jpg
+    report.pdf
+thumbs/
+  REC-123/
+    original-photo.webp
+    report-page-1.webp
+```
+
+Recommended record metadata shape:
+
+```json
+{
+  "_id": "REC-123",
+  "title": "Example",
+  "attachments": [
+    {
+      "id": "ATT-1",
+      "path": "attachments/REC-123/original-photo.jpg",
+      "thumb_path": "thumbs/REC-123/original-photo.webp",
+      "name": "original-photo.jpg",
+      "mime": "image/jpeg",
+      "size": 1827364,
+      "sha256": "…"
+    }
+  ]
+}
+```
+
+Thumbnail strategy:
+
+- For images: use native browser APIs (`createImageBitmap`, `<canvas>`, `canvas.toBlob`) to generate thumbnails client-side
+- For PDFs: optionally use `pdf.js` later to render page 1 to canvas and save a preview thumbnail
+- For video/audio and advanced media conversion: consider `ffmpeg.wasm` only later if there is a real use case; it is unnecessary for normal image thumbnails
+- For Office documents and unsupported file types: use file-type icons first, previews only if later justified
+
+Performance rules:
+
+- Never embed binary content or base64 payloads into record JSON
+- Never load full attachments during normal startup or list rendering
+- Load only attachment metadata with the record
+- Load thumbnail files on demand in list/detail views
+- Load original files only when the user explicitly opens or downloads them
+- Thumbnails are derived artifacts: safe to regenerate if missing
+
 ---
 
 ## 6. File and module layout
