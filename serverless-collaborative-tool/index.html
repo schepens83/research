@@ -36,19 +36,27 @@
     .btn-danger:hover { background: #c82333; }
     .btn-ghost { background: none; border: 1px solid #ccc; color: #555; border-radius: 4px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; }
     .btn-ghost:hover { background: #f0f0f0; }
-    .btn-warn { background: #e67e22; color: #fff; border: none; border-radius: 4px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; }
-    .btn-warn:hover { background: #d35400; }
+    .btn-active { background: #4361ee; color: #fff; border: 1px solid #4361ee; border-radius: 4px; padding: 5px 12px; font-size: 0.8rem; cursor: pointer; }
 
-    .toolbar { padding: 12px 20px; display: flex; gap: 10px; align-items: center; background: #fff; border-bottom: 1px solid #e0e0e0; }
+    .toolbar { padding: 10px 20px; display: flex; gap: 8px; align-items: center; background: #fff; border-bottom: 1px solid #e0e0e0; }
     .toolbar input[type=search] { flex: 1; padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; outline: none; }
     .toolbar input[type=search]:focus { border-color: #4361ee; }
+    .search-mode-toggle { display: flex; border: 1px solid #ccc; border-radius: 4px; overflow: hidden; }
+    .search-mode-toggle button { border: none; border-radius: 0; padding: 5px 10px; font-size: 0.75rem; cursor: pointer; background: #fff; color: #666; }
+    .search-mode-toggle button.active { background: #4361ee; color: #fff; }
+    .search-mode-toggle button:not(:last-child) { border-right: 1px solid #ccc; }
+    .model-pill { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+    .model-pill.loading { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+    .model-pill.ready   { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
 
     .list { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
-    .record-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 16px; cursor: pointer; transition: box-shadow 0.1s; }
+    .record-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 16px; cursor: pointer; transition: box-shadow 0.1s; display: flex; flex-direction: column; gap: 4px; }
     .record-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-color: #4361ee; }
-    .record-card h3 { font-size: 0.95rem; font-weight: 500; }
-    .record-meta { font-size: 0.75rem; color: #888; margin-top: 4px; }
-    .record-fields { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .record-card-top { display: flex; align-items: baseline; gap: 8px; }
+    .record-card h3 { font-size: 0.95rem; font-weight: 500; flex: 1; }
+    .score-badge { font-size: 0.7rem; font-weight: 700; padding: 1px 7px; border-radius: 10px; background: #ebefff; color: #4361ee; border: 1px solid #c5ceff; white-space: nowrap; }
+    .record-meta { font-size: 0.75rem; color: #888; }
+    .record-fields { display: flex; flex-wrap: wrap; gap: 6px; }
     .field-pill { background: #f0f2f5; border: 1px solid #e0e0e0; border-radius: 3px; padding: 2px 7px; font-size: 0.72rem; color: #555; }
     .field-pill strong { color: #333; }
     .empty-state { text-align: center; color: #aaa; padding: 40px; font-size: 0.9rem; }
@@ -65,7 +73,6 @@
     .kv-row textarea { flex: 2; }
     .form-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
 
-    /* Conflict resolution view */
     .conflicts-panel { margin: 16px 20px; }
     .conflicts-panel > h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #c0392b; }
     .conflicts-panel > p { font-size: 0.85rem; color: #666; margin-bottom: 16px; line-height: 1.5; }
@@ -84,7 +91,7 @@
     .conflicts-actions { display: flex; gap: 10px; margin-top: 8px; }
 
     .banner { border-radius: 6px; padding: 10px 14px; margin: 12px 20px; font-size: 0.82rem; }
-    .banner-ok { background: #e8f5e9; border: 1px solid #a5d6a7; color: #2e7d32; }
+    .banner-ok   { background: #e8f5e9; border: 1px solid #a5d6a7; color: #2e7d32; }
     .banner-warn { background: #fff3e0; border: 1px solid #ffcc80; color: #e65100; }
 
     .statusbar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; color: #aaa; font-size: 0.75rem; padding: 4px 16px; text-align: center; }
@@ -113,7 +120,7 @@
     </header>
 
     <template x-if="!fsaSupported">
-      <div class="banner banner-warn">⚠️ File System Access API not supported. This tool requires Chrome or Edge 86+.</div>
+      <div class="banner banner-warn">⚠️ File System Access API not supported. Requires Chrome or Edge 86+.</div>
     </template>
 
     <template x-if="fsaSupported && !dirHandle">
@@ -126,35 +133,62 @@
 
     <template x-if="dirHandle">
       <div>
-        <template x-if="phase0ok">
-          <div class="banner banner-ok">✓ Phase 0 + Phase 2 validated: FSA API works, git initialised in folder.</div>
-        </template>
-
         <!-- List view -->
         <template x-if="view === 'list'">
           <div>
             <div class="toolbar">
-              <input type="search" placeholder="Search records…" x-model="search">
+              <input type="search"
+                :placeholder="searchMode === 'semantic' ? 'Ask a question or describe what you\'re looking for…' : 'Search records…'"
+                x-model="search"
+                @input="onSearchInput()">
+
+              <div class="search-mode-toggle">
+                <button :class="{ active: searchMode === 'keyword' }" @click="setSearchMode('keyword')">Keyword</button>
+                <button :class="{ active: searchMode === 'semantic' }" @click="setSearchMode('semantic')">Semantic</button>
+              </div>
+
+              <template x-if="searchMode === 'semantic'">
+                <span class="model-pill" :class="modelState === 'ready' ? 'ready' : 'loading'"
+                  x-text="modelState === 'ready' ? '🧠 ready' : modelState === 'loading' ? '⏳ loading model…' : '🧠 idle'">
+                </span>
+              </template>
+
               <button class="btn-sm" @click="newRecord()">+ New record</button>
             </div>
+
             <div class="list">
               <template x-if="filteredRecords.length === 0">
                 <div class="empty-state">
-                  <template x-if="search"><span>No records match "<span x-text="search"></span>"</span></template>
-                  <template x-if="!search"><span>No records yet. Create your first record.</span></template>
+                  <template x-if="searchMode === 'semantic' && modelState === 'loading'">
+                    <span>Loading embedding model (~23 MB)…</span>
+                  </template>
+                  <template x-if="!(searchMode === 'semantic' && modelState === 'loading')">
+                    <template x-if="search">
+                      <span>No records match "<span x-text="search"></span>"</span>
+                    </template>
+                    <template x-if="!search">
+                      <span>No records yet. Create your first record.</span>
+                    </template>
+                  </template>
                 </div>
               </template>
-              <template x-for="[id, rec] in filteredRecords" :key="id">
-                <div class="record-card" @click="editRecord(id)">
-                  <h3 x-text="rec.title || '(untitled)'"></h3>
-                  <div class="record-meta">
-                    <span x-text="id"></span>&nbsp;·&nbsp;
-                    <span x-text="rec._updated_by || '?'"></span>&nbsp;·&nbsp;
-                    <span x-text="rec._updated_at ? new Date(rec._updated_at).toLocaleString() : ''"></span>
+
+              <template x-for="item in filteredRecords" :key="item.id">
+                <div class="record-card" @click="editRecord(item.id)">
+                  <div class="record-card-top">
+                    <h3 x-text="item.rec.title || '(untitled)'"></h3>
+                    <template x-if="item.score !== null">
+                      <span class="score-badge" x-text="Math.round(item.score * 100) + '% match'"></span>
+                    </template>
                   </div>
-                  <template x-if="userFields(rec).length > 0">
+                  <div class="record-meta">
+                    <span x-text="item.id"></span>&nbsp;·&nbsp;
+                    <span x-text="item.rec._updated_by || '?'"></span>&nbsp;·&nbsp;
+                    <span x-text="item.rec._updated_at ? new Date(item.rec._updated_at).toLocaleString() : ''"></span>
+                  </div>
+                  <template x-if="userFields(item.rec).length > 0">
                     <div class="record-fields">
-                      <template x-for="[k, v] in userFields(rec)" :key="k">
+                      <template x-for="[k, v] in userFields(item.rec)" :key="k">
                         <span class="field-pill"><strong x-text="k"></strong>:&nbsp;<span x-text="String(v).slice(0, 60)"></span></span>
                       </template>
                     </div>
@@ -198,11 +232,7 @@
         <template x-if="view === 'conflicts'">
           <div class="conflicts-panel">
             <h2>⚠ Merge Conflict</h2>
-            <p>
-              Someone else saved changes to this folder while you were editing.
-              The tool auto-merged non-overlapping changes.
-              Resolve the fields below, then confirm to save.
-            </p>
+            <p>Someone else saved changes to this folder while you were editing. The tool auto-merged non-overlapping changes. Resolve the fields below, then confirm to save.</p>
             <template x-for="conflict in pendingMerge.conflicts" :key="conflict.id">
               <div class="conflict-card">
                 <div class="conflict-card-header"
@@ -245,7 +275,8 @@
   {
     "imports": {
       "idb-keyval": "https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm",
-      "isomorphic-git": "https://esm.sh/isomorphic-git@1"
+      "isomorphic-git": "https://esm.sh/isomorphic-git@1",
+      "@huggingface/transformers": "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3/+esm"
     }
   }
   </script>
@@ -253,106 +284,70 @@
   <script type="module">
     import { get, set } from 'idb-keyval';
     import * as git from 'isomorphic-git';
+    import { pipeline, env } from '@huggingface/transformers';
 
-    // ─── FSA → isomorphic-git adapter ──────────────────────────────────────────
-    // Adapted from github.com/chigichan24/duff (MIT). Translates isomorphic-git's
-    // Node-style fs.promises calls into File System Access API operations.
+    env.allowLocalModels = false; // always load from HF Hub for this proof
+
+    // ─── FSA → isomorphic-git adapter ─────────────────────────────────────────
 
     const _adapterCache = new WeakMap();
 
-    function _splitPath(path) {
-      return path.split('/').filter(p => p && p !== '.');
-    }
-    function _splitParentAndName(path) {
-      const parts = _splitPath(path);
-      const name = parts.pop();
-      return { parentPath: parts.join('/'), name };
-    }
+    function _splitPath(p) { return p.split('/').filter(s => s && s !== '.'); }
+    function _splitParentAndName(p) { const parts = _splitPath(p); const name = parts.pop(); return { parentPath: parts.join('/'), name }; }
 
     function createFsaAdapter(rootHandle) {
       if (_adapterCache.has(rootHandle)) return _adapterCache.get(rootHandle);
-      const handleCache = new Map();
-
+      const hc = new Map();
       const getHandle = async (pathStr) => {
         if (!pathStr || pathStr === '.' || pathStr === '/') return rootHandle;
-        if (handleCache.has(pathStr)) return handleCache.get(pathStr);
+        if (hc.has(pathStr)) return hc.get(pathStr);
         const parts = _splitPath(pathStr);
-        let current = rootHandle;
-        let currentPath = '';
+        let cur = rootHandle, curPath = '';
         for (let i = 0; i < parts.length; i++) {
-          const part = parts[i];
-          currentPath += (currentPath ? '/' : '') + part;
-          if (handleCache.has(currentPath)) { current = handleCache.get(currentPath); continue; }
+          const p = parts[i];
+          curPath += (curPath ? '/' : '') + p;
+          if (hc.has(curPath)) { cur = hc.get(curPath); continue; }
           try {
-            current = i < parts.length - 1
-              ? await current.getDirectoryHandle(part)
-              : await (async () => { try { return await current.getFileHandle(part); } catch { return await current.getDirectoryHandle(part); } })();
-            handleCache.set(currentPath, current);
-          } catch {
-            throw Object.assign(new Error(`ENOENT: ${pathStr}`), { code: 'ENOENT' });
-          }
+            cur = i < parts.length - 1
+              ? await cur.getDirectoryHandle(p)
+              : await (async () => { try { return await cur.getFileHandle(p); } catch { return await cur.getDirectoryHandle(p); } })();
+            hc.set(curPath, cur);
+          } catch { throw Object.assign(new Error(`ENOENT: ${pathStr}`), { code: 'ENOENT' }); }
         }
-        return current;
+        return cur;
       };
-
       const fs = {
-        async readFile(path, options) {
-          const handle = await getHandle(path);
-          if (handle.kind !== 'file') throw Object.assign(new Error('EISDIR'), { code: 'EISDIR' });
-          const file = await handle.getFile();
-          const buf = await file.arrayBuffer();
-          const u8 = new Uint8Array(buf);
-          const enc = typeof options === 'string' ? options : options?.encoding;
+        async readFile(path, opts) {
+          const h = await getHandle(path);
+          if (h.kind !== 'file') throw Object.assign(new Error('EISDIR'), { code: 'EISDIR' });
+          const u8 = new Uint8Array(await (await h.getFile()).arrayBuffer());
+          const enc = typeof opts === 'string' ? opts : opts?.encoding;
           return (enc === 'utf8' || enc === 'utf-8') ? new TextDecoder().decode(u8) : u8;
         },
         async writeFile(path, data) {
           const { parentPath, name } = _splitParentAndName(path);
-          let dir = rootHandle;
-          for (const p of _splitPath(parentPath)) dir = await dir.getDirectoryHandle(p, { create: true });
-          const fh = await dir.getFileHandle(name, { create: true });
-          const w = await fh.createWritable();
-          await w.write(data);
-          await w.close();
-          // invalidate cached handle so next read sees new content
-          handleCache.delete(path);
+          let d = rootHandle;
+          for (const p of _splitPath(parentPath)) d = await d.getDirectoryHandle(p, { create: true });
+          const w = await (await d.getFileHandle(name, { create: true })).createWritable();
+          await w.write(data); await w.close(); hc.delete(path);
         },
         async readdir(path) {
-          const handle = await getHandle(path || '.');
-          if (handle.kind !== 'directory') throw Object.assign(new Error('ENOTDIR'), { code: 'ENOTDIR' });
-          const names = [];
-          for await (const name of handle.keys()) names.push(name);
-          return names;
+          const h = await getHandle(path || '.');
+          if (h.kind !== 'directory') throw Object.assign(new Error('ENOTDIR'), { code: 'ENOTDIR' });
+          const r = []; for await (const n of h.keys()) r.push(n); return r;
         },
         async stat(path) {
-          const handle = await getHandle(path || '.');
-          const isFile = handle.kind === 'file';
-          const file = isFile ? await handle.getFile() : null;
-          const mtimeMs = file ? file.lastModified : Date.now();
-          return {
-            isFile: () => isFile, isDirectory: () => !isFile, isSymbolicLink: () => false,
-            size: file?.size ?? 0, mtimeMs, mtime: new Date(mtimeMs),
-            ctimeMs: mtimeMs, ctime: new Date(mtimeMs),
-            atimeMs: mtimeMs, atime: new Date(mtimeMs),
-            mode: isFile ? 0o100644 : 0o040755, uid: 0, gid: 0, dev: 0, ino: 0,
-          };
+          const h = await getHandle(path || '.');
+          const isFile = h.kind === 'file', f = isFile ? await h.getFile() : null;
+          const ms = f ? f.lastModified : Date.now();
+          return { isFile: () => isFile, isDirectory: () => !isFile, isSymbolicLink: () => false,
+            size: f?.size ?? 0, mtimeMs: ms, mtime: new Date(ms), ctimeMs: ms, ctime: new Date(ms),
+            atimeMs: ms, atime: new Date(ms), mode: isFile ? 0o100644 : 0o040755, uid: 0, gid: 0, dev: 0, ino: 0 };
         },
         async lstat(path) { return fs.stat(path); },
-        async unlink(path) {
-          const { parentPath, name } = _splitParentAndName(path);
-          const parent = await getHandle(parentPath);
-          await parent.removeEntry(name);
-          handleCache.delete(path);
-        },
-        async mkdir(path) {
-          let current = rootHandle;
-          for (const p of _splitPath(path)) current = await current.getDirectoryHandle(p, { create: true });
-        },
-        async rmdir(path) {
-          const { parentPath, name } = _splitParentAndName(path);
-          const parent = await getHandle(parentPath);
-          await parent.removeEntry(name, { recursive: true });
-          handleCache.delete(path);
-        },
+        async unlink(path) { const { parentPath, name } = _splitParentAndName(path); await (await getHandle(parentPath)).removeEntry(name); hc.delete(path); },
+        async mkdir(path) { let c = rootHandle; for (const p of _splitPath(path)) c = await c.getDirectoryHandle(p, { create: true }); },
+        async rmdir(path) { const { parentPath, name } = _splitParentAndName(path); await (await getHandle(parentPath)).removeEntry(name, { recursive: true }); hc.delete(path); },
         async readlink() { return ''; },
         async symlink() {},
       };
@@ -364,98 +359,107 @@
     // ─── Utilities ─────────────────────────────────────────────────────────────
 
     function serialize(data) {
-      const sortObj = o => Object.fromEntries(Object.keys(o).sort().map(k => [k, o[k]]));
-      const top = sortObj(data);
-      for (const id of Object.keys(top)) {
-        if (top[id] && typeof top[id] === 'object' && !Array.isArray(top[id])) {
-          top[id] = sortObj(top[id]);
-        }
-      }
+      const s = o => Object.fromEntries(Object.keys(o).sort().map(k => [k, o[k]]));
+      const top = s(data);
+      for (const id of Object.keys(top))
+        if (top[id] && typeof top[id] === 'object' && !Array.isArray(top[id])) top[id] = s(top[id]);
       return JSON.stringify(top, null, 2);
     }
-
-    function deepCopy(obj) { return JSON.parse(JSON.stringify(obj)); }
-
-    function newId() {
-      return 'REC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
-    }
+    const deepCopy = o => JSON.parse(JSON.stringify(o));
+    const newId = () => 'REC-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
 
     // ─── Three-way merge ───────────────────────────────────────────────────────
-    // base  = committed state when we loaded
-    // ours  = base + our in-memory edits
-    // theirs = current on-disk state (committed by someone else)
-    // Returns { data: merged object, conflicts: [] }
 
     function threeWayMerge(base, ours, theirs) {
-      const conflicts = [];
-      const result = {};
+      const conflicts = [], result = {};
+      const eq = (x, y) => JSON.stringify(x) === JSON.stringify(y);
       const allIds = new Set([...Object.keys(base), ...Object.keys(ours), ...Object.keys(theirs)]);
-
       for (const id of allIds) {
         const b = base[id], o = ours[id], t = theirs[id];
-        const eq = (x, y) => JSON.stringify(x) === JSON.stringify(y);
-
-        // Deletion cases
-        if (!o && b && eq(b, t)) { continue; }          // we deleted, they left alone → delete
-        if (!t && b && eq(b, o)) { continue; }          // they deleted, we left alone → delete
-        if (!o && !t) { continue; }                      // both deleted
-        if (!o && b && !eq(b, t)) {                     // we deleted, they edited → keep theirs
-          conflicts.push({ id, type: 'delete-vs-edit', fields: [{ field: '(record)', base: b, ours: null, theirs: t }] });
-          result[id] = t; continue;
-        }
-        if (!t && b && !eq(b, o)) {                     // they deleted, we edited → keep ours
-          conflicts.push({ id, type: 'edit-vs-delete', fields: [{ field: '(record)', base: b, ours: o, theirs: null }] });
-          result[id] = o; continue;
-        }
-
-        // New records added by one side
+        if (!o && b && eq(b, t)) continue;
+        if (!t && b && eq(b, o)) continue;
+        if (!o && !t) continue;
+        if (!o && b && !eq(b, t)) { conflicts.push({ id, type: 'delete-vs-edit', fields: [{ field: '(record)', base: b, ours: null, theirs: t }] }); result[id] = t; continue; }
+        if (!t && b && !eq(b, o)) { conflicts.push({ id, type: 'edit-vs-delete', fields: [{ field: '(record)', base: b, ours: o, theirs: null }] }); result[id] = o; continue; }
         if (!b && o && !t) { result[id] = o; continue; }
         if (!b && !o && t) { result[id] = t; continue; }
         if (!b && o && t && eq(o, t)) { result[id] = o; continue; }
-
-        // Field-level merge
-        const mergedRec = {};
-        const fieldConflicts = [];
-        const allFields = new Set([
-          ...Object.keys(b ?? {}),
-          ...Object.keys(o ?? {}),
-          ...Object.keys(t ?? {}),
-        ]);
-
+        const mergedRec = {}, fieldConflicts = [];
+        const allFields = new Set([...Object.keys(b ?? {}), ...Object.keys(o ?? {}), ...Object.keys(t ?? {})]);
         for (const field of allFields) {
           const bv = b?.[field], ov = o?.[field], tv = t?.[field];
-
-          // Auto-resolve metadata fields — never surface to user as conflicts
-          if (field === '_updated_at') {
-            mergedRec[field] = (ov ?? '') > (tv ?? '') ? ov : tv;
-            continue;
-          }
-          if (field === '_updated_by') {
-            mergedRec[field] = (o?._updated_at ?? '') > (t?._updated_at ?? '') ? ov : tv;
-            continue;
-          }
-          if (field.startsWith('_')) {
-            mergedRec[field] = ov ?? tv;
-            continue;
-          }
-
-          const ourChanged = !eq(ov, bv);
-          const theirChanged = !eq(tv, bv);
-          if (!ourChanged && !theirChanged) { mergedRec[field] = bv; }
-          else if (ourChanged && !theirChanged) { mergedRec[field] = ov; }
-          else if (!ourChanged && theirChanged) { mergedRec[field] = tv; }
-          else if (eq(ov, tv)) { mergedRec[field] = ov; }
-          else {
-            fieldConflicts.push({ field, base: bv, ours: ov, theirs: tv });
-            mergedRec[field] = ov; // default to ours; user can override in UI
-          }
+          if (field === '_updated_at') { mergedRec[field] = (ov ?? '') > (tv ?? '') ? ov : tv; continue; }
+          if (field === '_updated_by') { mergedRec[field] = (o?._updated_at ?? '') > (t?._updated_at ?? '') ? ov : tv; continue; }
+          if (field.startsWith('_')) { mergedRec[field] = ov ?? tv; continue; }
+          const oc = !eq(ov, bv), tc = !eq(tv, bv);
+          if (!oc && !tc) mergedRec[field] = bv;
+          else if (oc && !tc) mergedRec[field] = ov;
+          else if (!oc && tc) mergedRec[field] = tv;
+          else if (eq(ov, tv)) mergedRec[field] = ov;
+          else { fieldConflicts.push({ field, base: bv, ours: ov, theirs: tv }); mergedRec[field] = ov; }
         }
-
         if (fieldConflicts.length > 0) conflicts.push({ id, type: 'field', fields: fieldConflicts });
         result[id] = mergedRec;
       }
-
       return { data: result, conflicts };
+    }
+
+    // ─── Embeddings ────────────────────────────────────────────────────────────
+
+    const MODEL_ID = 'Xenova/all-MiniLM-L6-v2';
+    const EMBEDDINGS_FILE = 'embeddings.json';
+
+    let embedder = null;
+    let embeddings = {};      // { id: number[] }
+    let searchDebounce = null;
+
+    function recordText(rec) {
+      const parts = [rec.title || ''];
+      for (const [k, v] of Object.entries(rec))
+        if (!k.startsWith('_') && k !== 'title') parts.push(`${k}: ${v}`);
+      return parts.filter(Boolean).join(' ');
+    }
+
+    function cosineSim(a, b) {
+      let dot = 0;
+      for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
+      return dot; // both vectors are already unit-normalised
+    }
+
+    async function loadEmbeddings(dirHandle) {
+      try {
+        const fh = await dirHandle.getFileHandle(EMBEDDINGS_FILE);
+        const text = await (await fh.getFile()).text();
+        embeddings = JSON.parse(text);
+      } catch { embeddings = {}; }
+    }
+
+    async function saveEmbeddings(dirHandle) {
+      try {
+        const fh = await dirHandle.getFileHandle(EMBEDDINGS_FILE, { create: true });
+        const w = await fh.createWritable();
+        await w.write(JSON.stringify(embeddings));
+        await w.close();
+      } catch { /* non-fatal */ }
+    }
+
+    async function embedRecord(id, rec) {
+      if (!embedder) return;
+      const text = recordText(rec);
+      const out = await embedder(text, { pooling: 'mean', normalize: true });
+      embeddings[id] = Array.from(out.data);
+    }
+
+    async function embedMissing(records, dirHandle, onProgress) {
+      const missing = Object.keys(records).filter(id => !embeddings[id]);
+      if (missing.length === 0) return;
+      let done = 0;
+      for (const id of missing) {
+        await embedRecord(id, records[id]);
+        done++;
+        if (onProgress) onProgress(done, missing.length);
+      }
+      await saveEmbeddings(dirHandle);
     }
 
     // ─── Module-level state ────────────────────────────────────────────────────
@@ -475,12 +479,14 @@
         username: localStorage.getItem('username') || 'user',
         records: {},
         search: '',
+        searchMode: 'keyword',   // 'keyword' | 'semantic'
+        modelState: 'idle',      // 'idle' | 'loading' | 'ready' | 'error'
+        semanticResults: null,   // [{ id, rec, score }] | null
         view: 'list',
         editingId: null,
         editForm: { title: '', fields: [] },
         status: 'Pick a folder to begin.',
-        gitStatus: 'clean',    // 'clean' | 'dirty' | 'conflict'
-        phase0ok: false,
+        gitStatus: 'clean',
         pendingMerge: null,
 
         async init() {
@@ -494,12 +500,15 @@
                 fsAdapter = createFsaAdapter(stored);
                 await this._ensureGit();
                 await this._loadAndTrackBase();
+                await loadEmbeddings(stored);
                 this._startAutoSave();
               } else {
-                this.status = 'Permission denied for stored folder. Pick a folder to continue.';
+                this.status = 'Permission denied. Pick the folder again.';
               }
             } catch { this.status = 'Stored folder inaccessible. Pick a new folder.'; }
           }
+          this.$watch('search', () => this._onSearchChanged());
+          this.$watch('searchMode', () => this._onSearchChanged());
         },
 
         async pickFolder() {
@@ -510,74 +519,136 @@
             fsAdapter = createFsaAdapter(handle);
             await this._ensureGit();
             await this._loadAndTrackBase();
-            this.phase0ok = true;
+            await loadEmbeddings(handle);
             this._startAutoSave();
           } catch (e) {
             if (e.name !== 'AbortError') this.status = 'Error: ' + e.message;
           }
         },
 
+        // ── Semantic search ──
+
+        setSearchMode(mode) {
+          this.searchMode = mode;
+          if (mode === 'semantic' && this.modelState === 'idle') this._loadModel();
+        },
+
+        async _loadModel() {
+          this.modelState = 'loading';
+          this.status = 'Loading embedding model (~23 MB)…';
+          try {
+            embedder = await pipeline('feature-extraction', MODEL_ID, { quantized: true });
+            this.modelState = 'ready';
+            this.status = 'Embedding model ready.';
+            // Embed any records that are missing embeddings
+            await embedMissing(this.records, this.dirHandle, (done, total) => {
+              this.status = `Computing embeddings… ${done}/${total}`;
+            });
+            if (this.search.trim()) this._runSemanticSearch(this.search);
+          } catch (e) {
+            this.modelState = 'error';
+            this.status = 'Model load error: ' + e.message;
+          }
+        },
+
+        _onSearchChanged() {
+          if (this.searchMode === 'keyword') {
+            this.semanticResults = null;
+            return;
+          }
+          // Semantic mode
+          if (!this.search.trim()) { this.semanticResults = null; return; }
+          if (this.modelState === 'idle') { this._loadModel(); return; }
+          if (this.modelState !== 'ready') return;
+          clearTimeout(searchDebounce);
+          searchDebounce = setTimeout(() => this._runSemanticSearch(this.search), 350);
+        },
+
+        async _runSemanticSearch(query) {
+          if (!embedder || !query.trim()) { this.semanticResults = null; return; }
+          try {
+            const out = await embedder(query.trim(), { pooling: 'mean', normalize: true });
+            const qVec = Array.from(out.data);
+            const results = Object.entries(this.records)
+              .filter(([id]) => embeddings[id])
+              .map(([id, rec]) => ({ id, rec, score: cosineSim(qVec, embeddings[id]) }))
+              .filter(r => r.score > 0.2)
+              .sort((a, b) => b.score - a.score)
+              .slice(0, 20);
+            this.semanticResults = results;
+          } catch (e) {
+            this.status = 'Search error: ' + e.message;
+          }
+        },
+
+        // ── Record list ──
+
+        get filteredRecords() {
+          if (this.searchMode === 'semantic' && this.search.trim()) {
+            return this.semanticResults ?? [];
+          }
+          const q = this.searchMode === 'keyword' ? this.search.trim().toLowerCase() : '';
+          return Object.entries(this.records)
+            .filter(([id, r]) => !q || [id, ...Object.values(r).map(String)].join(' ').toLowerCase().includes(q))
+            .sort((a, b) => (b[1]._updated_at || '').localeCompare(a[1]._updated_at || ''))
+            .map(([id, rec]) => ({ id, rec, score: null }));
+        },
+
+        onSearchInput() {
+          // Clears semanticResults immediately when field is emptied
+          if (!this.search.trim()) this.semanticResults = null;
+        },
+
+        userFields(rec) {
+          const reserved = new Set(['title', '_id', '_updated_by', '_updated_at']);
+          return Object.entries(rec).filter(([k]) => !reserved.has(k));
+        },
+
+        // ── Git ──
+
         async _ensureGit() {
           try {
             await git.resolveRef({ fs: fsAdapter, dir: '/', ref: 'HEAD' });
           } catch {
-            // No git yet — initialise and make first commit if data exists
             await git.init({ fs: fsAdapter, dir: '/', defaultBranch: 'main' });
-            this.status = 'Git initialised in folder.';
-            try {
-              await git.add({ fs: fsAdapter, dir: '/', filepath: 'data.json' });
-              await this._doCommit('Initial commit');
-            } catch { /* data.json might not exist yet */ }
+            try { await git.add({ fs: fsAdapter, dir: '/', filepath: 'data.json' }); await this._doCommit('Initial commit'); } catch {}
           }
         },
 
         async _loadAndTrackBase() {
           try {
             const fh = await this.dirHandle.getFileHandle('data.json', { create: true });
-            const file = await fh.getFile();
-            const text = await file.text();
+            const text = await (await fh.getFile()).text();
             const data = text.trim() ? JSON.parse(text) : {};
             this.records = data;
             baseData = deepCopy(data);
             baseCommit = await this._headSha();
-            const count = Object.keys(data).length;
-            this.status = count === 0
-              ? 'Folder connected. No records yet.'
-              : `Loaded ${count} record${count === 1 ? '' : 's'}.`;
+            const n = Object.keys(data).length;
+            this.status = n === 0 ? 'Folder connected. No records yet.' : `Loaded ${n} record${n === 1 ? '' : 's'}.`;
             this.gitStatus = 'clean';
-          } catch (e) {
-            this.status = 'Load error: ' + e.message;
-          }
+          } catch (e) { this.status = 'Load error: ' + e.message; }
         },
 
         async _headSha() {
-          try { return await git.resolveRef({ fs: fsAdapter, dir: '/', ref: 'HEAD' }); }
-          catch { return null; }
+          try { return await git.resolveRef({ fs: fsAdapter, dir: '/', ref: 'HEAD' }); } catch { return null; }
         },
 
         async _doCommit(message) {
           return git.commit({
-            fs: fsAdapter,
-            dir: '/',
+            fs: fsAdapter, dir: '/',
             message: message ?? `Update by ${this.username} at ${new Date().toISOString()}`,
-            author: {
-              name: this.username,
-              email: `${this.username.replace(/\s+/g, '.')}@local`,
-              timestamp: Math.floor(Date.now() / 1000),
-              timezoneOffset: new Date().getTimezoneOffset(),
-            },
+            author: { name: this.username, email: `${this.username.replace(/\s+/g, '.')}@local`,
+              timestamp: Math.floor(Date.now() / 1000), timezoneOffset: new Date().getTimezoneOffset() },
           });
         },
 
         async _writeAndCommit(data) {
           const fh = await this.dirHandle.getFileHandle('data.json', { create: true });
           const w = await fh.createWritable();
-          await w.write(serialize(data));
-          await w.close();
+          await w.write(serialize(data)); await w.close();
           await git.add({ fs: fsAdapter, dir: '/', filepath: 'data.json' });
           const sha = await this._doCommit();
-          baseData = deepCopy(data);
-          baseCommit = sha;
+          baseData = deepCopy(data); baseCommit = sha;
           this.gitStatus = 'clean';
           this.status = `Saved & committed ${Object.keys(data).length} records.`;
         },
@@ -587,37 +658,25 @@
           isSaving = true;
           try {
             const currentHead = await this._headSha();
-
             if (currentHead === baseCommit) {
-              // Fast path: no concurrent changes
               await this._writeAndCommit(this.records);
             } else {
-              // Someone else committed since we loaded — read current disk state
               const fh = await this.dirHandle.getFileHandle('data.json');
-              const file = await fh.getFile();
-              const text = await file.text();
-              const diskData = text.trim() ? JSON.parse(text) : {};
+              const diskData = JSON.parse((await (await fh.getFile()).text()) || '{}');
               const { data: merged, conflicts } = threeWayMerge(baseData, this.records, diskData);
-
               if (conflicts.length > 0) {
-                // Update merged data to include auto-merged records
                 this.records = merged;
                 this.pendingMerge = { merged: deepCopy(merged), conflicts };
-                this.view = 'conflicts';
-                this.gitStatus = 'conflict';
+                this.view = 'conflicts'; this.gitStatus = 'conflict';
                 this.status = `${conflicts.length} conflict${conflicts.length === 1 ? '' : 's'} need resolving.`;
-                // Update baseCommit to theirs so next cycle is relative to current disk state
                 baseCommit = currentHead;
               } else {
                 this.records = merged;
                 await this._writeAndCommit(merged);
               }
             }
-          } catch (e) {
-            this.status = 'Save error: ' + e.message;
-          } finally {
-            isSaving = false;
-          }
+          } catch (e) { this.status = 'Save error: ' + e.message; }
+          finally { isSaving = false; }
         },
 
         _startAutoSave() {
@@ -627,54 +686,28 @@
 
         // ── Conflict resolution ──
 
-        resolveField(recordId, fieldName, value) {
-          // Update pendingMerge.merged with the chosen value
+        resolveField(recordId, field, value) {
           const rec = this.pendingMerge.merged[recordId];
-          if (rec) rec[fieldName] = value;
-          // Trigger Alpine reactivity
+          if (rec) rec[field] = value;
           this.pendingMerge = { ...this.pendingMerge, merged: { ...this.pendingMerge.merged } };
         },
 
         async commitResolved() {
           this.records = this.pendingMerge.merged;
-          this.pendingMerge = null;
-          this.gitStatus = 'dirty';
+          this.pendingMerge = null; this.gitStatus = 'dirty';
           await this._writeAndCommit(this.records);
           this.view = 'list';
         },
 
         // ── Record CRUD ──
 
-        get filteredRecords() {
-          const q = this.search.trim().toLowerCase();
-          return Object.entries(this.records)
-            .filter(([id, r]) => {
-              if (!q) return true;
-              return [id, ...Object.values(r).map(String)].join(' ').toLowerCase().includes(q);
-            })
-            .sort((a, b) => (b[1]._updated_at || '').localeCompare(a[1]._updated_at || ''));
-        },
-
-        userFields(rec) {
-          const reserved = new Set(['title', '_id', '_updated_by', '_updated_at']);
-          return Object.entries(rec).filter(([k]) => !reserved.has(k));
-        },
-
-        newRecord() {
-          this.editingId = null;
-          this.editForm = { title: '', fields: [] };
-          this.view = 'edit';
-        },
+        newRecord() { this.editingId = null; this.editForm = { title: '', fields: [] }; this.view = 'edit'; },
 
         editRecord(id) {
           const r = this.records[id];
           const reserved = new Set(['title', '_id', '_updated_by', '_updated_at']);
-          this.editForm = {
-            title: r.title || '',
-            fields: Object.entries(r).filter(([k]) => !reserved.has(k)).map(([key, value]) => ({ key, value: String(value) })),
-          };
-          this.editingId = id;
-          this.view = 'edit';
+          this.editForm = { title: r.title || '', fields: Object.entries(r).filter(([k]) => !reserved.has(k)).map(([key, value]) => ({ key, value: String(value) })) };
+          this.editingId = id; this.view = 'edit';
         },
 
         addField() { this.editForm.fields.push({ key: '', value: '' }); },
@@ -682,39 +715,30 @@
 
         async saveRecord() {
           const id = this.editingId || newId();
-          const record = {
-            _id: id,
-            _updated_at: new Date().toISOString(),
-            _updated_by: this.username,
-            title: this.editForm.title || '(untitled)',
-          };
-          for (const { key, value } of this.editForm.fields) {
-            const k = key.trim();
-            if (k && !k.startsWith('_')) record[k] = value;
-          }
+          const record = { _id: id, _updated_at: new Date().toISOString(), _updated_by: this.username, title: this.editForm.title || '(untitled)' };
+          for (const { key, value } of this.editForm.fields) { const k = key.trim(); if (k && !k.startsWith('_')) record[k] = value; }
           this.records = { ...this.records, [id]: record };
-          this.gitStatus = 'dirty';
-          this.view = 'list';
+          this.gitStatus = 'dirty'; this.view = 'list';
+          // Update embedding for this record in the background
+          if (embedder) {
+            embedRecord(id, record).then(() => saveEmbeddings(this.dirHandle));
+            // Re-run semantic search if active
+            if (this.searchMode === 'semantic' && this.search.trim()) this._runSemanticSearch(this.search);
+          }
           await this.trySave();
         },
 
         async deleteRecord(id) {
           if (!confirm('Delete this record?')) return;
-          const updated = { ...this.records };
-          delete updated[id];
-          this.records = updated;
-          this.gitStatus = 'dirty';
-          this.view = 'list';
+          const updated = { ...this.records }; delete updated[id]; delete embeddings[id];
+          this.records = updated; this.gitStatus = 'dirty'; this.view = 'list';
+          saveEmbeddings(this.dirHandle);
           await this.trySave();
         },
 
         setUsername() {
           const name = prompt('Enter your name (used in _updated_by):', this.username);
-          if (name?.trim()) {
-            this.username = name.trim();
-            localStorage.setItem('username', this.username);
-            this.status = `Username set to "${this.username}".`;
-          }
+          if (name?.trim()) { this.username = name.trim(); localStorage.setItem('username', this.username); this.status = `Username set to "${this.username}".`; }
         },
       }));
     });

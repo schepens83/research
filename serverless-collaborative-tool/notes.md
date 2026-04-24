@@ -151,6 +151,47 @@ then save window 2 — window 2 should detect the concurrent commit and auto-mer
 To trigger a conflict: edit the same field in both windows, save window 1 first, then
 save window 2 — the conflict UI should appear.
 
+## Phase 3 implementation notes
+
+Added semantic search via transformers.js.
+
+### Model choice
+`Xenova/all-MiniLM-L6-v2` — 384-dimensional sentence embeddings, quantized ONNX (~23 MB).
+Good balance of quality and size. Widely used in transformers.js examples. Downloads from
+HuggingFace Hub on first use and is cached in the browser (Cache API / IndexedDB).
+
+For production (air-gapped corporate): pre-download the model files to the shared folder
+and point `env.localModelPath` at it. The `env.allowLocalModels = true` flag enables this.
+
+### Library loading
+`@huggingface/transformers@3` loaded from jsDelivr `+esm` endpoint. The `+esm` endpoint
+bundles the package cleanly for browser use. The `pipeline` function handles model download,
+ONNX Runtime WASM setup, and inference — all in-browser, no server.
+
+### Embeddings storage
+`embeddings.json` in the folder root — `{ "REC-xxx": [0.1, 0.2, ...] }`.
+Each record produces a 384-float array (~1.5 KB per record as JSON).
+Not git-tracked (it's a cache). Loaded on startup, updated on each record save.
+
+### Text used for embedding
+`title` + all non-`_` field values joined with spaces. This means the full content of the
+record is embedded, not just the title. Better recall for field-level queries.
+
+### Cosine similarity
+Both query and record vectors are unit-normalised (via `normalize: true` in the pipeline).
+Cosine similarity reduces to dot product, O(n × dims) over all records. For hundreds of
+records this is fast enough in JS; for thousands, consider pre-filtering with keyword search
+first.
+
+### UX decisions
+- Model loads lazily on first switch to Semantic mode, not on app start (avoids 23 MB download for users who never use it)
+- Minimum similarity threshold: 0.20 — filters noise while keeping related results
+- Results capped at top 20 by score
+- Score shown as "XX% match" badge on each card
+- Model loading state shown as a pill in the toolbar: ⏳ loading / 🧠 ready
+- On save: recomputes embedding for the saved record in background, updates results if search is active
+- `$watch` on `search` and `searchMode` drives search reactively, debounced 350ms
+
 ## What still needs validating on the actual corporate setup
 
 - Does Edge on a managed laptop allow `showDirectoryPicker()` at all? (Group policy may block it)
