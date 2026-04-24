@@ -199,3 +199,19 @@ first.
 - Does the directory handle survive a browser restart, or does it always require re-picking?
   (Spec says `requestPermission()` is needed; whether the handle itself persists is policy-dependent)
 - Does concurrent write from two Edge tabs on the same machine work? (Phase 2 question)
+
+## Deferred next phase notes
+
+Not for implementation now, but worth capturing explicitly:
+
+- Prefer a Phase 5 scale-out design over introducing SQLite as the primary store
+- Keep JSON as the canonical collaborative format because git merge behavior is the key property
+- When the dataset grows beyond comfortable single-file loading, move to:
+  - `index.json` for lightweight startup metadata
+  - partitioned record storage (`records/<id>.json` or grouped files by year/category)
+  - lazy loading of full record bodies on demand
+  - separate embeddings storage, partitioned if needed
+- Treat images and other files as attachments, not inline JSON data
+- Attachment records should store only metadata such as relative path, display name, MIME type, size, hash, and optional thumbnail path
+- Avoid base64-encoding files into JSON; that would hurt load time, save time, merge behavior, and repo size
+- If attachments become common, generate thumbnails/previews as separate derived files so list view stays fast

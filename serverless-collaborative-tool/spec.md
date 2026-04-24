@@ -206,6 +206,21 @@ Goal: synthesis, drafting, summarization.
 - Use cases: summarize a record, suggest fields when importing unstructured text, draft a response
 - Keep this clearly optional — embedding search delivers most of the RAG value and is much more reliable
 
+### Phase 5 — scale-out storage and attachments
+
+Goal: keep startup, save, and merge performance acceptable as the dataset grows, while allowing images and other files to be associated with records without bloating the core data file.
+
+- Keep JSON as the source of truth, but stop using a single monolithic `data.json` once the dataset becomes large
+- Introduce a lightweight `index.json` for fast startup and list/search metadata
+- Store full records in separate files such as `records/<id>.json` or partition by year/category
+- Load record bodies lazily when opening a detail view instead of loading everything at startup
+- Keep embeddings separate from record bodies, and partition them if needed
+- Treat images and other files as attachments stored beside the data, referenced by metadata in the record JSON
+- Never inline binary payloads into JSON; store paths, filenames, MIME types, sizes, hashes, and optional thumbnails/preview metadata only
+- Continue using git for record JSON and attachment metadata; decide separately whether large binary attachments should be git-tracked, excluded, or mirrored to a backup path
+
+This phase is a scaling/hardening phase, not a current implementation target. Prefer this over adopting SQLite as the primary store. SQLite can still be added later as an optional read-side cache or index, but not as the canonical collaborative data format.
+
 ---
 
 ## 6. File and module layout
@@ -242,6 +257,8 @@ Browsers support ES modules natively; no bundler needed if the files sit on the 
 **A user's browser has stale data and overwrites with old values.** The three-way merge prevents this — `base` is the version they loaded, so any field they didn't touch is taken from `theirs` (the current disk version), not from their stale local state.
 
 **The JSON file becomes too large.** At ~10K records of moderate size, you're looking at maybe 20-50MB of JSON. Still workable but slow. Mitigation: split into multiple files (`data-2024.json`, `data-2025.json`) or partition by category. Don't optimize until it's actually a problem.
+
+**Images and other files make the dataset balloon.** Do not embed binary content in JSON or base64 fields. Store attachments as separate files and keep only metadata plus relative paths in the records. If image-heavy usage becomes common, add thumbnails/previews as separate derived files rather than loading originals into the list view.
 
 **Someone edits the JSON file directly in a text editor.** They might. Git will treat it as a normal commit. As long as they don't break the JSON syntax, this is fine and actually a useful escape hatch.
 
